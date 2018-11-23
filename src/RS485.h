@@ -35,11 +35,11 @@
 #define RS845_DEFAULT_DE_PIN 0
 #define RS845_DEFAULT_RE_PIN 0
 #endif
-#define DEFINE_RS485(name, n, depin, repin)           \
+#define DEFINE_USART_RS485(name, n, depin, repin)           \
     RS485Class name(USART##n,                \
                BOARD_USART##n##_TX_PIN, \
                BOARD_USART##n##_RX_PIN,depin,repin)
-#define DEFINE_HWSERIAL_UART_485(name, n, depin, repin) \
+#define DEFINE_UART_485(name, n, depin, repin) \
     RS485Class name(UART##n,                   \
                BOARD_USART##n##_TX_PIN,   \
                BOARD_USART##n##_RX_PIN,depin,repin)
