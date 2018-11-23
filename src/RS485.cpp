@@ -72,7 +72,7 @@ void RS485Class::begin(unsigned long baudrate, uint16_t config)
 
   _transmisionBegun = false;
 
-    this->begin(baudrate, config);
+    HardwareSerial::begin(baudrate, config);
 }
 
 void RS485Class::end()
@@ -92,22 +92,22 @@ void RS485Class::end()
 
 int RS485Class::available()
 {
-    return this->available();
+    return HardwareSerial::available();
 }
 
 int RS485Class::peek()
 {
-    return this->peek();
+    return HardwareSerial::peek();
 }
 
 int RS485Class::read(void)
 {
-    return this->read();
+    return HardwareSerial::read();
 }
 
 void RS485Class::flush()
 {
-    return this->flush();
+    return HardwareSerial::flush();
 }
 
 size_t RS485Class::write(uint8_t b)
@@ -117,7 +117,7 @@ size_t RS485Class::write(uint8_t b)
     return 0;
   }
 
-    return this->write(b);
+    return HardwareSerial::write(b);
 }
 
 RS485Class::operator bool()
