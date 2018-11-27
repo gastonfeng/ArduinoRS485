@@ -92,6 +92,6 @@ private:
     uint16_t _config;
 };
 
-extern RS485Class RS485;
+//extern RS485Class RS485;
 
 #endif
