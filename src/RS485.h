@@ -35,17 +35,18 @@
 #define RS845_DEFAULT_DE_PIN 0
 #define RS845_DEFAULT_RE_PIN 0
 #endif
-#define DEFINE_USART_RS485(name, n, depin, repin)           \
-    RS485Class name(USART##n,                \
-               BOARD_USART##n##_TX_PIN, \
-               BOARD_USART##n##_RX_PIN,depin,repin)
+#define DEFINE_USART_RS485(name, n, depin, repin) \
+    RS485Class name(USART##n,                     \
+                    BOARD_USART##n##_TX_PIN,      \
+                    BOARD_USART##n##_RX_PIN, depin, repin)
 #define DEFINE_UART_485(name, n, depin, repin) \
     RS485Class name(UART##n,                   \
-               BOARD_USART##n##_TX_PIN,   \
-               BOARD_USART##n##_RX_PIN,depin,repin)
+                    BOARD_USART##n##_TX_PIN,   \
+                    BOARD_USART##n##_RX_PIN, depin, repin)
 
-class RS485Class : public HardwareSerial {
-public:
+class RS485Class : public HardwareSerial
+{
+  public:
     RS485Class(usart_dev *usart_device, int txPin, uint8 rx_pin, int dePin, int rePin);
 
     virtual void begin(unsigned long baudrate);
@@ -80,8 +81,24 @@ public:
     void sendBreakMicroseconds(unsigned int duration);
 
     void setPins(int txPin, int dePin, int rePin);
+    size_t write(const void *buffer, uint32 size)
+    {
+        int d = size;
+        beginTransmission();
+        delay(1);
+        size_t n = 0;
+        uint8 *ch = (uint8 *)buffer;
+        while (size--)
+        {
+            write(*ch++);
+            n++;
+        }
+        delay(d);
+        receive();
+        return n;
+    }
 
-private:
+  private:
     //HardwareSerial* _serial;
     int _txPin;
     int _dePin;
