@@ -21,7 +21,6 @@
 #define _RS485_H_INCLUDED
 
 #include <Arduino.h>
-#include <libmaple/usart.h>
 #ifdef PIN_SERIAL1_TX
 #define RS485_DEFAULT_TX_PIN PIN_SERIAL1_TX
 #else
@@ -47,7 +46,7 @@
 class RS485Class : public HardwareSerial
 {
   public:
-    RS485Class(usart_dev *usart_device, int txPin, uint8 rx_pin, int dePin, int rePin);
+    RS485Class(uint8_t txPin, uint8_t rx_pin, uint8_t dePin, uint8_t rePin);
 
     virtual void begin(unsigned long baudrate);
 
@@ -81,13 +80,13 @@ class RS485Class : public HardwareSerial
     void sendBreakMicroseconds(unsigned int duration);
 
     void setPins(int txPin, int dePin, int rePin);
-    size_t write(const void *buffer, uint32 size)
+    size_t write(const void *buffer, uint32_t size)
     {
         int d = size;
         beginTransmission();
         delay(1);
         size_t n = 0;
-        uint8 *ch = (uint8 *)buffer;
+        uint8_t *ch = (uint8_t *)buffer;
         while (size--)
         {
             write(*ch++);

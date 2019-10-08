@@ -18,38 +18,14 @@
 */
 
 #include "RS485.h"
-#include <libmaple/usart.h>
 
-void usart_disable_rx(usart_dev *dev)
-{
-  usart_reg_map *regs = dev->regs;
-  // while (!rb_is_empty(dev->wb))
-  //     ; // wait for TX completed
-  // /* TC bit must be high before disabling the USART */
-  // while ((regs->CR1 & USART_CR1_UE) && !(regs->SR & USART_SR_TC))
-  //     ;
-
-  regs->CR1 &= ~USART_CR1_RE; // don't change the word length etc, and 'or' in the patten not overwrite |USART_CR1_M_8N1);
-  usart_reset_rx(dev);
-}
-
-void usart_enable_rx(usart_dev *dev)
-{
-  usart_reg_map *regs = dev->regs;
-  while ((regs->CR1 & USART_CR1_UE) && !(regs->SR & USART_SR_TC))
-    ;
-  regs->CR1 |= (USART_CR1_TE | USART_CR1_RE |
-                USART_CR1_RXNEIE); // don't change the word length etc, and 'or' in the patten not overwrite |USART_CR1_M_8N1);
-  regs->CR1 |= USART_CR1_UE;
-}
-
-RS485Class::RS485Class(usart_dev *usart_device, int txPin, uint8 rx_pin, int dePin, int rePin) : HardwareSerial(
-                                                                                                     usart_device, txPin, rx_pin),
-                                                                                                 _txPin(txPin),
-                                                                                                 _dePin(dePin),
-                                                                                                 _rePin(rePin),
-                                                                                                 _transmisionBegun(
-                                                                                                     false)
+RS485Class::RS485Class(uint8_t txPin, uint8_t rx_pin, uint8_t dePin, uint8_t rePin) : HardwareSerial(
+                                                                                             txPin, rx_pin),
+                                                                                         _txPin(txPin),
+                                                                                         _dePin(dePin),
+                                                                                         _rePin(rePin),
+                                                                                         _transmisionBegun(
+                                                                                             false)
 {
 }
 
@@ -163,7 +139,12 @@ void RS485Class::receive()
   {
     digitalWrite(_rePin, LOW);
   }
-  usart_enable_rx(this->c_dev());
+  USART_TypeDef *regs = this->_serial.uart;
+  while ((regs->CR1 & USART_CR1_UE) && !(regs->SR & USART_SR_TC))
+    ;
+  regs->CR1 |= (USART_CR1_TE | USART_CR1_RE |
+                USART_CR1_RXNEIE); // don't change the word length etc, and 'or' in the patten not overwrite |USART_CR1_M_8N1);
+  regs->CR1 |= USART_CR1_UE;
 }
 
 void RS485Class::noReceive()
@@ -172,7 +153,8 @@ void RS485Class::noReceive()
   {
     digitalWrite(_rePin, HIGH);
   }
-  usart_disable_rx(this->c_dev());
+  this->_serial.uart->CR1 &= ~USART_CR1_RE;
+  ;
 }
 
 void RS485Class::sendBreak(unsigned int duration)
